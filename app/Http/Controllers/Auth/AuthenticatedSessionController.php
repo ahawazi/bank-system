@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -27,12 +26,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): Response
     {
-        Auth::guard('web')->logout();
+        $token = $request->user()->currentAccessToken();
 
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
+        if($token){
+            $token->delete();
+        }   
+        
         return response()->noContent();
     }
 }

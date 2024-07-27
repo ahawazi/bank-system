@@ -20,12 +20,10 @@ class AccountController extends Controller
         return response()->json($account, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $account = Auth::user()->accounts()->findOrFail($id);
+        return response()->json($account, 200);
     }
 
     /**

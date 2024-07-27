@@ -34,11 +34,10 @@ class AccountController extends Controller
         return response()->json($account, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $account = Auth::user()->accounts()->findOrFail($id);
+        $account->delete();
+        return response()->json(['message' => 'Account deleted successfully'], 200);
     }
 }

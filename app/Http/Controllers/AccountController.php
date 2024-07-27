@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAccountRequest;
+use App\Http\Requests\UpdateAccountRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,12 +27,11 @@ class AccountController extends Controller
         return response()->json($account, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateAccountRequest $request, $id)
     {
-        //
+        $account = Auth::user()->accounts()->findOrFail($id);
+        $account->update($request->validated());
+        return response()->json($account, 200);
     }
 
     /**

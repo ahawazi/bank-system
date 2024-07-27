@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAccountRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,9 +14,10 @@ class AccountController extends Controller
         return response()->json($accounts, 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreAccountRequest $request)
     {
-        //
+        $account = Auth::user()->accounts()->create($request->validated());
+        return response()->json($account, 201);
     }
 
     /**

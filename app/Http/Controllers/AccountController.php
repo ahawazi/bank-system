@@ -4,14 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
-use Illuminate\Http\Request;
+use App\Models\Account;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
-        $accounts = Auth::user()->accounts;
+        // $accounts = Auth::user()->accounts();
+        $accounts = Account::all();
         return response()->json($accounts, 200);
     }
 

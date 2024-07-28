@@ -11,7 +11,7 @@ class AccountSeeder extends Seeder
     public function run(): void
     {
         User::all()->each(function ($user) {
-            Account::factory(3)->create(['user_id' => $user->id]);
+            Account::factory(2)->create(['user_id' => $user->id]);
         });
     }
 }

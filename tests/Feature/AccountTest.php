@@ -4,7 +4,7 @@ use App\Models\User;
 use App\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use function Pest\Laravel\{actingAs, getJson, postJson, putJson, deleteJson};
+use function Pest\Laravel\{actingAs, get, post, put, delete};
 
 uses(RefreshDatabase::class);
 
@@ -18,7 +18,7 @@ beforeEach(function () {
 it('can list accounts', function () {
     Account::factory()->count(3)->create(['user_id' => $this->user->id]);
 
-    getJson('/api/accounts')
+    get('/api/accounts')
         ->assertStatus(200)
         ->assertJsonCount(3);
 });
@@ -26,7 +26,7 @@ it('can list accounts', function () {
 it('can create an account', function () {
     $accountData = Account::factory()->make()->toArray();
 
-    postJson('/api/accounts', $accountData)
+    post('/api/accounts', $accountData)
         ->assertStatus(201)
         ->assertJsonPath('account_number', $accountData['account_number']);
 });
@@ -34,7 +34,7 @@ it('can create an account', function () {
 it('can show an account', function () {
     $account = Account::factory()->create(['user_id' => $this->user->id]);
 
-    getJson("/api/accounts/{$account->id}")
+    get("/api/accounts/{$account->id}")
         ->assertStatus(200)
         ->assertJsonPath('account_number', $account->account_number);
 });
@@ -43,10 +43,10 @@ it('can update an account', function () {
     $account = Account::factory()->create(['user_id' => $this->user->id]);
     $updateData = [
         'account_number' => 'NEW_NUMBER',
-        'phone_number' => '1234567890' // Add a valid phone number here
+        'phone_number' => '1234567890'
     ];
 
-    putJson("/api/accounts/{$account->id}", $updateData)
+    put("/api/accounts/{$account->id}", $updateData)
         ->assertStatus(200)
         ->assertJsonPath('account_number', 'NEW_NUMBER');
 });
@@ -54,7 +54,7 @@ it('can update an account', function () {
 it('can delete an account', function () {
     $account = Account::factory()->create(['user_id' => $this->user->id]);
 
-    deleteJson("/api/accounts/{$account->id}")
+    delete("/api/accounts/{$account->id}")
         ->assertStatus(200);
 
     expect(Account::find($account->id))->toBeNull();

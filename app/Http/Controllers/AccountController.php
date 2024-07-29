@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateAccountRequest;
 use App\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class AccountController extends Controller
 {
@@ -17,12 +18,21 @@ class AccountController extends Controller
         return response()->json($accounts, 200);
     }
 
-    public function store(StoreAccountRequest $request)
+    public function store(Request $request)
     {
-        $account = Auth::user()->accounts()->create($request->validated());
+        $request->validate([
+            'account_number' => 'required|string|unique:accounts|max:255',
+            'phone_number' => 'required|string|max:15',
+        ]);
+
+        $account = Auth::user()->accounts()->create([
+            'account_number' => $request->account_number,
+            'phone_number' => $request->phone_number,
+        ]);
+
         return response()->json($account, 201);
     }
-
+    
     public function show($id)
     {
         $account = Auth::user()->accounts()->findOrFail($id);

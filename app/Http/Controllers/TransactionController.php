@@ -20,12 +20,10 @@ class TransactionController extends Controller
         return response()->json($transaction, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $transaction = Transaction::findOrFail($id);
+        return response()->json($transaction, 200);
     }
 
     /**

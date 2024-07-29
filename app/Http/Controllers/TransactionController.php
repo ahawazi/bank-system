@@ -36,11 +36,12 @@ class TransactionController extends Controller
         return response()->json($transaction, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $transaction = Transaction::findOrFail($id);
+
+        $transaction->delete();
+
+        return response()->json(['message' => 'Transaction deleted successfully'], 200);
     }
 }

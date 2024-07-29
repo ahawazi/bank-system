@@ -39,10 +39,17 @@ class AccountController extends Controller
         return response()->json($account, 200);
     }
 
-    public function update(UpdateAccountRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $account = Auth::user()->accounts()->findOrFail($id);
-        $account->update($request->validated());
+
+        $request->validate([
+            'account_number' => 'required|string|max:255|unique:accounts,account_number,' . $account->id,
+            'phone_number' => 'required|string|max:15',
+        ]);
+
+        $account->update($request->all());
+
         return response()->json($account, 200);
     }
 

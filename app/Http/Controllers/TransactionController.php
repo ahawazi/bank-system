@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTransactionRequest;
+use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -26,12 +27,13 @@ class TransactionController extends Controller
         return response()->json($transaction, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateTransactionRequest $request, $id)
     {
-        //
+        $transaction = Transaction::findOrFail($id);
+        
+        $transaction->update($request->validated());
+
+        return response()->json($transaction, 200);
     }
 
     /**

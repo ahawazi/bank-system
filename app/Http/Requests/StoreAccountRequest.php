@@ -22,7 +22,7 @@ class StoreAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'account_number' => 'required|string|size:16',
+            'account_number' => 'required|string|size:16|regex:/[0-9]{16}/',
         ];
     }
 }

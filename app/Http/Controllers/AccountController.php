@@ -21,7 +21,7 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'account_number' => 'required|string|unique:accounts|size:16',
+            'account_number' => 'required|string|unique:accounts|size:16|regex:/[0-9]{16}/',
         ]);
 
         $account = Auth::user()->accounts()->create([
@@ -42,7 +42,7 @@ class AccountController extends Controller
         $account = Auth::user()->accounts()->findOrFail($id);
 
         $request->validate([
-            'account_number' => 'required|string|size:16|unique:accounts,account_number,' . $account->id,
+            'account_number' => 'required|string|size:16|regex:/[0-9]{16}/|unique:accounts,account_number,' . $account->id,
         ]);
 
         $account->update($request->all());

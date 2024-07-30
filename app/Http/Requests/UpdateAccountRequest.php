@@ -23,8 +23,7 @@ class UpdateAccountRequest extends FormRequest
     {
         $accountId = $this->route('account');
         return [
-            'account_number' => 'required|string|max:255|unique:accounts,account_number,' . $accountId,
-            'phone_number' => 'required|string|max:15',
+            'account_number' => 'required|string|<size:16></size:16>|unique:accounts,account_number,' . $accountId,
         ];
     }
 }

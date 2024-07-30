@@ -42,8 +42,7 @@ class AccountController extends Controller
         $account = Auth::user()->accounts()->findOrFail($id);
 
         $request->validate([
-            'account_number' => 'required|string|max:255|unique:accounts,account_number,' . $account->id,
-            'phone_number' => 'required|string|max:15',
+            'account_number' => 'required|string|size:16|unique:accounts,account_number,' . $account->id,
         ]);
 
         $account->update($request->all());

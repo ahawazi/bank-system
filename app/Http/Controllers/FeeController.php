@@ -20,12 +20,10 @@ class FeeController extends Controller
         return response()->json($fee, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $fee = Fee::findOrFail($id);
+        return response()->json($fee, 200);
     }
 
     /**

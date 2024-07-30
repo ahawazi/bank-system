@@ -11,8 +11,8 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $accounts = Transaction::all();
-        return response()->json($accounts, 200);
+        $transaction = Transaction::all();
+        return response()->json($transaction, 200);
     }
 
     public function store(StoreTransactionRequest $request)

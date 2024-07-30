@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fee;
 use Illuminate\Http\Request;
 
 class FeeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $fee = Fee::all();
+        return response()->json($fee, 200);
     }
 
     /**

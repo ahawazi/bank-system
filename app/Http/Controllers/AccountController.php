@@ -22,12 +22,10 @@ class AccountController extends Controller
     {
         $request->validate([
             'account_number' => 'required|string|unique:accounts|max:255',
-            'phone_number' => 'required|string|max:15',
         ]);
 
         $account = Auth::user()->accounts()->create([
             'account_number' => $request->account_number,
-            'phone_number' => $request->phone_number,
         ]);
 
         return response()->json($account, 201);

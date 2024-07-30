@@ -24,7 +24,6 @@ class AccountFactory extends Factory
         return [
             'user_id' => User::factory(),
             'account_number' => $this->faker->unique()->bankAccountNumber,
-            'phone_number' => $this->faker->phoneNumber,
         ];
     }
 }

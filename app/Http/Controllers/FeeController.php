@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreFeeRequest;
 use App\Models\Fee;
 use Illuminate\Http\Request;
 
@@ -13,12 +14,10 @@ class FeeController extends Controller
         return response()->json($fee, 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreFeeRequest $request)
     {
-        //
+        $fee = Fee::create($request->validated());
+        return response()->json($fee, 201);
     }
 
     /**

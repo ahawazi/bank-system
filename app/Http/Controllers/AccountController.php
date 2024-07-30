@@ -21,7 +21,7 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'account_number' => 'required|string|unique:accounts|max:255',
+            'account_number' => 'required|string|unique:accounts|size:16',
         ]);
 
         $account = Auth::user()->accounts()->create([

@@ -13,8 +13,8 @@ class AccountController extends Controller
 {
     public function index(): JsonResponse
     {
-        // $accounts = Auth::user()->accounts();
-        $accounts = Account::all();
+        $user = Auth::user();
+        $accounts = Account::where('user_id', $user->id)->get();
         return response()->json($accounts, 200);
     }
 
@@ -30,7 +30,7 @@ class AccountController extends Controller
 
         return response()->json($account, 201);
     }
-    
+
     public function show($id)
     {
         $account = Auth::user()->accounts()->findOrFail($id);

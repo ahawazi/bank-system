@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFeeRequest;
+use App\Http\Requests\UpdateFeeRequest;
 use App\Models\Fee;
 use Illuminate\Http\Request;
 
@@ -26,12 +27,13 @@ class FeeController extends Controller
         return response()->json($fee, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateFeeRequest $request, $id)
     {
-        //
+        $fee = Fee::findOrFail($id);
+
+        $fee->update($request->validated());
+
+        return response()->json($fee, 200);
     }
 
     /**

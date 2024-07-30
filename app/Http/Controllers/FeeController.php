@@ -36,11 +36,12 @@ class FeeController extends Controller
         return response()->json($fee, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $fee = Fee::findOrFail($id);
+
+        $fee->delete();
+
+        return response()->json(['message' => 'Fee deleted successfully'], 200);
     }
 }

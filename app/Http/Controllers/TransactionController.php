@@ -5,14 +5,19 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
     public function index()
     {
-        $transaction = Transaction::all();
-        return response()->json($transaction, 200);
+        $user = Auth::user();
+
+        $transactions = Transaction::whereHas('account', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->get();
+
+        return response()->json($transactions, 200);
     }
 
     public function store(StoreTransactionRequest $request)

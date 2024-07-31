@@ -6,6 +6,9 @@ use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class TransactionController extends Controller
 {
@@ -21,10 +24,40 @@ class TransactionController extends Controller
     }
 
     public function store(StoreTransactionRequest $request)
-    {
-        $transaction = Transaction::create($request->validated());
-        return response()->json($transaction, 201);
+{
+    $user = Auth::user();
+    $account = $user->accounts()->find($request->account_id);
+
+    if (!$account) {
+        return response()->json(['message' => 'Account not found or does not belong to the authenticated user.'], 404);
     }
+
+    $today = Carbon::today()->toDateString();
+    $cacheKey = "account:{$account->id}:transactions_total:{$today}";
+    $dailyLimit = 50000001;
+
+    $dailyTotal = Cache::remember($cacheKey, 86400, function () use ($account) {
+        return Transaction::where('account_id', $account->id)
+            ->whereDate('created_at', Carbon::today())
+            ->sum('amount');
+    });
+
+    $newTransactionAmount = $request->amount;
+
+    if (($dailyTotal + $newTransactionAmount) > $dailyLimit) {
+        return response()->json(['message' => 'Daily transaction limit exceeded.'], 403);
+    }
+
+    $transaction = Transaction::create([
+        'account_id' => $account->id,
+        'amount' => $newTransactionAmount,
+        'status' => $request->status,
+    ]);
+
+    Cache::increment($cacheKey, $newTransactionAmount);
+
+    return response()->json($transaction, 201);
+}
 
     public function show($id)
     {
@@ -35,7 +68,7 @@ class TransactionController extends Controller
     public function update(UpdateTransactionRequest $request, $id)
     {
         $transaction = Transaction::findOrFail($id);
-        
+
         $transaction->update($request->validated());
 
         return response()->json($transaction, 200);

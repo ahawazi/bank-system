@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -28,7 +29,7 @@ class AuthenticatedSessionController extends Controller
     {
         $token = $request->user()->currentAccessToken();
 
-        if($token){
+        if($token instanceof PersonalAccessToken){
             $token->delete();
         }   
         

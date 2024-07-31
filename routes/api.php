@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/balance', [TransactionController::class, 'balance'])->name('transactions.balance');
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
     Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store')->middleware(RateLimitTransactions::class);
     Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');

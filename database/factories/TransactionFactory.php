@@ -21,7 +21,7 @@ class TransactionFactory extends Factory
     {
         return [
             'account_id' => Account::factory(),
-            'amount' => $this->faker->randomFloat(2, 0, 10000),
+            'amount' => $this->faker->randomFloat(0, 1000, 50000001),
             'status' => $this->faker->randomElement(['successful', 'failed']),
         ];
     }

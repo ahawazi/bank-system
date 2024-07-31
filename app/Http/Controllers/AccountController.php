@@ -18,15 +18,9 @@ class AccountController extends Controller
         return response()->json($accounts, 200);
     }
 
-    public function store(Request $request)
+    public function store(StoreAccountRequest $request)
     {
-        $request->validate([
-            'account_number' => 'required|string|unique:accounts|size:16|regex:/[0-9]{16}/',
-        ]);
-
-        $account = Auth::user()->accounts()->create([
-            'account_number' => $request->account_number,
-        ]);
+        $account = Auth::user()->accounts()->create($request->validated());
 
         return response()->json($account, 201);
     }
@@ -37,15 +31,9 @@ class AccountController extends Controller
         return response()->json($account, 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateAccountRequest $request, $id): JsonResponse
     {
-        $account = Auth::user()->accounts()->findOrFail($id);
-
-        $request->validate([
-            'account_number' => 'required|string|size:16|regex:/[0-9]{16}/|unique:accounts,account_number,' . $account->id,
-        ]);
-
-        $account->update($request->all());
+        $account = Auth::user()->accounts()->findOrFail($id)->update($request->validated());
 
         return response()->json($account, 200);
     }

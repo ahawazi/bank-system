@@ -23,7 +23,7 @@ class UpdateFeeRequest extends FormRequest
     {
         return [
             'transaction_id' => 'required|exists:transactions,id',
-            'fee_amount' => 'required|numeric|min:0',
+            'fee_amount' => 'required|string|min:3|max:3',
         ];
     }
 }

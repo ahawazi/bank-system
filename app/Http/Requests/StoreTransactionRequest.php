@@ -23,7 +23,7 @@ class StoreTransactionRequest extends FormRequest
     {
         return [
             'account_id' => 'required|exists:accounts,id',
-            'amount' => 'required|numeric',
+            'amount' => 'required|string|max:8|min:4',
             'status' => 'required|in:successful,failed',
         ];
     }

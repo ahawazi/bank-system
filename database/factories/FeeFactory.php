@@ -19,7 +19,7 @@ class FeeFactory extends Factory
     {
         return [
             'transaction_id' => Transaction::factory(),
-            'fee_amount' => $this->faker->randomFloat(2, 1, 100),
+            'fee_amount' => $this->faker->randomFloat(0, 500, 500),
         ];
     }
 }

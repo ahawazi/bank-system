@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Middleware\RateLimitTransactions;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
@@ -16,7 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
-    Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
+    Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store')->middleware(RateLimitTransactions::class);
     Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
     Route::put('/transactions/{id}', [TransactionController::class, 'update'])->name('transactions.update');
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');

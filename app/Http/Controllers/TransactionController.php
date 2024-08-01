@@ -3,29 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Events\TransactionProcessed;
-use App\Events\TransferCompleted;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use App\Models\Account;
-use App\Models\Transfer;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-
-
     public function topUsersTransactions(Request $request)
     {
         $timeLimit = Carbon::now()->subMinutes(10);
 
         $topUserIds = Transaction::where('transactions.created_at', '>=', $timeLimit)
             ->join('accounts', 'transactions.account_id', '=', 'accounts.id')
-            ->join('users', 'accounts.user_id', '=', 'users.id') // Ensure we get user_id
+            ->join('users', 'accounts.user_id', '=', 'users.id')
             ->select('accounts.user_id', \DB::raw('COUNT(transactions.id) as transaction_count'))
             ->groupBy('accounts.user_id')
             ->orderBy('transaction_count', 'desc')
@@ -58,11 +52,6 @@ class TransactionController extends Controller
         return response()->json($responseData, 200);
     }
 
-
-
-    
-
-
     public function index()
     {
         $user = Auth::user();
@@ -73,8 +62,6 @@ class TransactionController extends Controller
 
         return response()->json($transactions, 200);
     }
-
-
 
     public function store(StoreTransactionRequest $request)
     {
@@ -112,8 +99,6 @@ class TransactionController extends Controller
 
         return response()->json($transaction, 201);
     }
-
-
 
     public function show($id)
     {

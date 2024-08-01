@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFeeRequest;
-use App\Http\Requests\UpdateFeeRequest;
 use App\Models\Fee;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class FeeController extends Controller
 {

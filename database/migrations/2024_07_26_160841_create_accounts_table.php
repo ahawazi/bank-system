@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('account_number')->unique();
+            $table->bigInteger('inventory')->default(0);
             $table->timestamps();
         });
     }

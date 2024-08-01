@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions/top-users', [TransactionController::class, 'topUsersTransactions']);
 
     Route::get('/transactions/successful-per-hour', [TransactionController::class, 'successfulTransactionsPerHour']);
+
+    Route::get('/transactions/amount-per-user-per-month', [TransactionController::class, 'amountPerUserPerMonth']);
     
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions', [TransactionController::class, 'store'])->middleware(RateLimitTransactions::class);

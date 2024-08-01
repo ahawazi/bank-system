@@ -14,6 +14,20 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
+    public function amountPerUserPerMonth()
+    {
+        $results = DB::table('transactions')
+            ->join('accounts', 'transactions.account_id', '=', 'accounts.id')
+            ->select(DB::raw("accounts.user_id, transactions.account_id, DATE_FORMAT(transactions.created_at, '%Y-%m') as month, SUM(transactions.amount) as total_amount"))
+            ->groupBy('accounts.user_id', 'transactions.account_id', 'month')
+            ->orderBy('accounts.user_id', 'asc')
+            ->orderBy('transactions.account_id', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+    
+        return response()->json($results);
+    }
+    
     public function successfulTransactionsPerHour()
     {
         $results = DB::table('transactions')

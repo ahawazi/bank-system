@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             AccountSeeder::class,
-            // TransactionSeeder::class,
+            TransactionSeeder::class,
             // FeeSeeder::class,
             // TransferSeeder::class,
         ]);

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\FeeController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransferController;
@@ -18,9 +19,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/transfer', [TransferController::class, 'transfer'])->middleware(RateLimitTransactions::class);
 
+Route::get('/balance', [BalanceController::class, 'balance']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/top-users-transactions', [TransactionController::class, 'topUsersTransactions']);
-    Route::get('/balance', [TransactionController::class, 'balance']);
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions', [TransactionController::class, 'store'])->middleware(RateLimitTransactions::class);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);

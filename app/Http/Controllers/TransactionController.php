@@ -38,12 +38,9 @@ class TransactionController extends Controller
 
         DB::transaction(function () use ($sourceAccount, $destinationAccount, $request) {
 
-            $transfer = Transfer::create([
-                'source_account_id' => $sourceAccount->id,
-                'destination_account_id' => $destinationAccount->id,
-                'amount' => $request->amount,
-                'status' => 'completed',
-            ]);
+            $sourceAccount->update(['inventory' => $sourceAccount->inventory - $request->amount]);
+
+            $destinationAccount->update(['inventory' => $destinationAccount->inventory + $request->amount]);
 
             $sourceAccount->transactions()->create([
                 'amount' => -$request->amount,
@@ -53,6 +50,13 @@ class TransactionController extends Controller
             $destinationAccount->transactions()->create([
                 'amount' => $request->amount,
                 'status' => 'successful',
+            ]);
+
+            Transfer::create([
+                'source_account_id' => $sourceAccount->id,
+                'destination_account_id' => $destinationAccount->id,
+                'amount' => $request->amount,
+                'status' => 'completed',
             ]);
         });
 
@@ -138,21 +142,4 @@ class TransactionController extends Controller
         return response()->json($transaction, 200);
     }
 
-    public function update(UpdateTransactionRequest $request, $id)
-    {
-        $transaction = Transaction::findOrFail($id);
-
-        $transaction->update($request->validated());
-
-        return response()->json($transaction, 200);
-    }
-
-    public function destroy($id)
-    {
-        $transaction = Transaction::findOrFail($id);
-
-        $transaction->delete();
-
-        return response()->json(['message' => 'Transaction deleted successfully'], 200);
-    }
 }

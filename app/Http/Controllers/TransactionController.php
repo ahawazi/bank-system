@@ -10,9 +10,22 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
+    public function successfulTransactionsPerHour()
+    {
+        $results = DB::table('transactions')
+            ->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') as hour, COUNT(*) as transaction_count"))
+            ->where('status', 'successful')
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->get();
+
+        return response()->json($results);
+    }
+
     public function topUsersTransactions(Request $request)
     {
         $timeLimit = Carbon::now()->subMinutes(10);

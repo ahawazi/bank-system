@@ -22,7 +22,11 @@ Route::post('/transfer', [TransferController::class, 'transfer'])->middleware(Ra
 Route::get('/balance', [BalanceController::class, 'balance']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/top-users-transactions', [TransactionController::class, 'topUsersTransactions']);
+
+    Route::get('/transactions/top-users', [TransactionController::class, 'topUsersTransactions']);
+
+    Route::get('/transactions/successful-per-hour', [TransactionController::class, 'successfulTransactionsPerHour']);
+    
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions', [TransactionController::class, 'store'])->middleware(RateLimitTransactions::class);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);

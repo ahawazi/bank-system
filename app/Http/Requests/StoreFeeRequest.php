@@ -23,7 +23,7 @@ class StoreFeeRequest extends FormRequest
     {
         return [
             'transaction_id' => 'required|exists:transactions,id',
-            'fee_amount' => 'required|string|min:3|max:3',
+            'fee_amount' => 'required|numeric|digits_between:3,3',
         ];
     }
 }

@@ -23,7 +23,7 @@ class UpdateTransactionRequest extends FormRequest
     {
         return [
             'account_id' => 'required|exists:accounts,id',
-            'amount' => 'required|string|max:8|min:4',
+            'amount' => 'required|numeric|digits_between:4,8',
             'status' => 'required|in:successful,failed',
         ];
     }

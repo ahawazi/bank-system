@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/top-users-transactions', [TransactionController::class, 'topUsersTransactions']);
     Route::get('/balance', [TransactionController::class, 'balance']);
     Route::post('/transfer', [TransactionController::class, 'transfer'])->middleware(RateLimitTransactions::class);
     Route::get('/transactions', [TransactionController::class, 'index']);

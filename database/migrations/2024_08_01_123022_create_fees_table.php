@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('fees', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('transaction_id')->constrained()->onDelete('cascade');
+            $table->foreignId('transaction_id')->nullable()->constrained('transactions')->onDelete('cascade');
+            $table->foreignId('transfer_id')->nullable()->constrained('transfers')->onDelete('cascade');
             $table->decimal('fee_amount', 3, 0);
             $table->timestamps();
         });

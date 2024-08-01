@@ -12,10 +12,54 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Account;
 use App\Models\Transfer;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
+
+
+    public function topUsersTransactions(Request $request)
+    {
+        $timeLimit = Carbon::now()->subMinutes(10);
+
+        $topUserIds = Transaction::where('transactions.created_at', '>=', $timeLimit)
+            ->join('accounts', 'transactions.account_id', '=', 'accounts.id')
+            ->join('users', 'accounts.user_id', '=', 'users.id') // Ensure we get user_id
+            ->select('accounts.user_id', \DB::raw('COUNT(transactions.id) as transaction_count'))
+            ->groupBy('accounts.user_id')
+            ->orderBy('transaction_count', 'desc')
+            ->limit(3)
+            ->pluck('accounts.user_id');
+
+        $userTransactions = User::whereIn('id', $topUserIds)
+            ->with(['accounts.transactions' => function ($query) {
+                $query->latest()->limit(10);
+            }])
+            ->get();
+
+        $responseData = $userTransactions->map(function ($user) {
+            return [
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'transaction_count' => $user->accounts->flatMap->transactions->count(),
+                'accounts_id' => $user->accounts,
+                'last_10_transactions' => $user->accounts->flatMap->transactions->map(function ($transaction) {
+                    return [
+                        'transaction_id' => $transaction->id,
+                        'amount' => $transaction->amount,
+                        'status' => $transaction->status,
+                        'created_at' => $transaction->created_at->toDateTimeString(),
+                    ];
+                }),
+            ];
+        });
+
+        return response()->json($responseData, 200);
+    }
+
+
+
     public function transfer(Request $request)
     {
         $request->validate([
@@ -67,6 +111,8 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transfer successful'], 200);
     }
 
+
+
     public function balance(Request $request)
     {
         $user = Auth::user();
@@ -93,6 +139,8 @@ class TransactionController extends Controller
         ]);
     }
 
+
+
     public function index()
     {
         $user = Auth::user();
@@ -103,6 +151,8 @@ class TransactionController extends Controller
 
         return response()->json($transactions, 200);
     }
+
+
 
     public function store(StoreTransactionRequest $request)
     {
@@ -140,6 +190,8 @@ class TransactionController extends Controller
 
         return response()->json($transaction, 201);
     }
+
+
 
     public function show($id)
     {

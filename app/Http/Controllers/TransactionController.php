@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TransactionProcessed;
+use App\Events\TransferCompleted;
 use App\Http\Requests\StoreTransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class TransactionController extends Controller
             'source_account_number' => 'required|string|exists:accounts,account_number',
             'destination_account_number' => 'required|string|exists:accounts,account_number',
             'amount' => 'required|numeric|digits_between:4,8',
+            'status' => 'required|in:successful,failed',
         ]);
 
         $sourceAccount = Account::where('account_number', $request->source_account_number)->first();
@@ -44,20 +46,22 @@ class TransactionController extends Controller
 
             $sourceAccount->transactions()->create([
                 'amount' => -$request->amount,
-                'status' => 'successful',
+                'status' =>  $request->status,
             ]);
 
             $destinationAccount->transactions()->create([
                 'amount' => $request->amount,
-                'status' => 'successful',
+                'status' =>  $request->status,
             ]);
 
-            Transfer::create([
+            $transfer = Transfer::create([
                 'source_account_id' => $sourceAccount->id,
                 'destination_account_id' => $destinationAccount->id,
                 'amount' => $request->amount,
-                'status' => 'completed',
+                'status' => $request->status,
             ]);
+            
+            event(new TransferCompleted($transfer));            
         });
 
         return response()->json(['message' => 'Transfer successful'], 200);
@@ -111,9 +115,9 @@ class TransactionController extends Controller
 
         $today = Carbon::today()->toDateString();
         $cacheKey = "account:{$account->id}:transactions_total:{$today}";
-        $dailyLimit = 50000001;
+        $dailyLimit = 50000000;
 
-        $dailyTotal = Cache::remember($cacheKey, 86400, function () use ($account) {
+        $dailyTotal = Cache::remember($cacheKey, 86400, function () use ($account, $today) {
             return Transaction::where('account_id', $account->id)
                 ->whereDate('created_at', $today)
                 ->sum('amount');
@@ -125,11 +129,12 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Daily transaction limit exceeded.'], 403);
         }
 
-        if ($request->status === 'successful') {
-            $account->increment('inventory', $newTransactionAmount);
-        }
-
         $transaction = Transaction::create($request->validated());
+
+        if ($request->status === 'successful') {
+            $account->decrement('inventory', $newTransactionAmount);
+            event(new TransactionProcessed($transaction));
+        }
 
         Cache::increment($cacheKey, $newTransactionAmount);
 

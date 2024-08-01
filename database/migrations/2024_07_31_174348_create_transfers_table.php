@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('transfers', function (Blueprint $table) {
@@ -16,14 +13,11 @@ return new class extends Migration
             $table->foreignId('source_account_id')->constrained('accounts')->onDelete('cascade');
             $table->foreignId('destination_account_id')->constrained('accounts')->onDelete('cascade');
             $table->decimal('amount', 8, 0);
-            $table->string('status');
+            $table->enum('status', ['successful', 'failed']);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('transfers');

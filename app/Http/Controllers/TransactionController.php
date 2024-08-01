@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Account;
+use App\Models\Transfer;
 use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
@@ -19,7 +20,7 @@ class TransactionController extends Controller
         $request->validate([
             'source_account_number' => 'required|string|exists:accounts,account_number',
             'destination_account_number' => 'required|string|exists:accounts,account_number',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|digits_between:4,8',
         ]);
 
         $sourceAccount = Account::where('account_number', $request->source_account_number)->first();
@@ -29,20 +30,26 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Source and destination accounts cannot be the same.'], 400);
         }
 
-        $sourceBalance = $sourceAccount->transactions()->where('status', 'successful')->sum('amount');
+        $sourceBalance = $sourceAccount->inventory;
 
         if ($sourceBalance < $request->amount) {
             return response()->json(['message' => 'Insufficient funds in the source account.'], 403);
         }
 
         DB::transaction(function () use ($sourceAccount, $destinationAccount, $request) {
-            // Deduct from source account
+
+            $transfer = Transfer::create([
+                'source_account_id' => $sourceAccount->id,
+                'destination_account_id' => $destinationAccount->id,
+                'amount' => $request->amount,
+                'status' => 'completed',
+            ]);
+
             $sourceAccount->transactions()->create([
                 'amount' => -$request->amount,
                 'status' => 'successful',
             ]);
 
-            // Add to destination account
             $destinationAccount->transactions()->create([
                 'amount' => $request->amount,
                 'status' => 'successful',
@@ -62,7 +69,9 @@ class TransactionController extends Controller
 
         foreach ($accounts as $account) {
             $accountBalance = $account->transactions->where('status', 'successful')->sum('amount');
+            $inventory = $account->inventory;
             $accountBalances[] = [
+                'inventory' => $inventory,
                 'account_id' => $account->id,
                 'account_number' => $account->account_number,
                 'balance' => $accountBalance,

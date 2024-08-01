@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             AccountSeeder::class,
             TransactionSeeder::class,
             FeeSeeder::class,
+            TransferSeeder::class,
         ]);
 
         // Account::factory(5)->create();

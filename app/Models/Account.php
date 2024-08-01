@@ -14,6 +14,7 @@ class Account extends Model
     protected $fillable = [
         'user_id',
         'account_number',
+        'inventory',
     ];
 
     public function user(): BelongsTo
@@ -24,6 +25,12 @@ class Account extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function updateInventory(float $amount): void
+    {
+        $this->inventory += $amount;
+        $this->save();
     }
 
 }

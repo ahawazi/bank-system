@@ -24,6 +24,7 @@ class AccountFactory extends Factory
         return [
             'user_id' => User::factory(),
             'account_number' => $this->faker->regexify('[0-9]{16}'),
+            'inventory' => $this->faker->randomNumber(),
         ];
     }
 }

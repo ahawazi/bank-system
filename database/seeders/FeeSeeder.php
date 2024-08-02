@@ -13,6 +13,6 @@ class FeeSeeder extends Seeder
      */
     public function run(): void
     {
-        Fee::factory()->count(10)->create();
+        Fee::factory()->count(101000)->create();
     }
 }

@@ -14,6 +14,51 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
+    public function amountPerAccountPerUserPerMonth()
+    {
+        $summarizedData = DB::table('transactions')
+            ->join('accounts', 'transactions.account_id', '=', 'accounts.id')
+            ->select(DB::raw("accounts.user_id, accounts.account_number, transactions.account_id, DATE_FORMAT(transactions.created_at, '%Y-%m') as month, SUM(transactions.amount) as total_amount"))
+            ->groupBy('accounts.user_id', 'accounts.account_number', 'transactions.account_id', 'month')
+            ->orderBy('accounts.user_id', 'asc')
+            // ->orderBy('accounts.account_number', 'asc')
+            ->orderBy('transactions.account_id', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+    
+        $transactions = DB::table('transactions')
+            ->join('accounts', 'transactions.account_id', '=', 'accounts.id')
+            ->select('accounts.user_id', 'accounts.account_number', 'transactions.account_id', 'transactions.amount', 'transactions.created_at', DB::raw("DATE_FORMAT(transactions.created_at, '%Y-%m') as month"))
+            ->orderBy('accounts.user_id', 'asc')
+            ->orderBy('accounts.account_number', 'asc')
+            ->orderBy('transactions.created_at', 'asc')
+            ->get();
+    
+        $response = [];
+    
+        foreach ($summarizedData as $summary) {
+            $userId = $summary->user_id;
+            $accountId = $summary->account_id;
+            $month = $summary->month;
+            $accountNumber = $summary->account_number;
+    
+            $userTransactions = $transactions->filter(function ($transaction) use ($userId, $accountId, $month) {
+                return $transaction->user_id == $userId && $transaction->account_id == $accountId && $transaction->month == $month;
+            });
+    
+            $response[] = [
+                'user_id' => $userId,
+                'account_id' => $accountId,
+                'month' => $month,
+                'account_number' => $accountNumber,
+                'total_amount' => $summary->total_amount,
+                'transactions' => $userTransactions->values()->all(),
+            ];
+        }
+    
+        return response()->json($response);
+    }    
+
     public function amountPerUserPerMonth()
     {
         $results = DB::table('transactions')

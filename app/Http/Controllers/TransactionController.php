@@ -66,8 +66,6 @@ class TransactionController extends Controller
             ->select(DB::raw("accounts.user_id, transactions.account_id, DATE_FORMAT(transactions.created_at, '%Y-%m') as month, SUM(transactions.amount) as total_amount"))
             ->groupBy('accounts.user_id', 'transactions.account_id', 'month')
             ->orderBy('accounts.user_id', 'asc')
-            ->orderBy('transactions.account_id', 'asc')
-            ->orderBy('month', 'asc')
             ->get();
     
         return response()->json($results);

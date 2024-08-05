@@ -11,6 +11,8 @@ class FeeController extends Controller
 {
     public function index()
     {
+       throw new \Exception('123213');
+
         $user = Auth::user();
     
         $transactions = Transaction::whereHas('account', function ($query) use ($user) {

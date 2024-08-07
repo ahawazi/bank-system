@@ -11,7 +11,9 @@ class AddUser extends Command
      *
      * @var string
      */
-    protected $signature = 'app:add-user';
+
+    //  command name :
+    protected $signature = 'add:user';
 
     /**
      * The console command description.

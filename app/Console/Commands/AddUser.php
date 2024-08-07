@@ -20,7 +20,7 @@ class AddUser extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Add a new user';
 
     /**
      * Execute the console command.
